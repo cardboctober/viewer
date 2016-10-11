@@ -5,6 +5,7 @@
     <title>Runner</title>
   </head>
   <body>
+    <a href="" id="link" target="_blank">Connect</a>
     <script src="//js.pusher.com/3.1/pusher.js"></script>
     <script type="text/javascript">
 
@@ -41,6 +42,8 @@
           preauth = response.auth
 
           window.private = pusher.subscribe('private-' + response.id)
+
+          link.href = link.innerText ="viewer.html#" + response.id
 
         })
     })
