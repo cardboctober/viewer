@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Runner</title>
+  </head>
+  <body>
+    <script src="//js.pusher.com/3.1/pusher.js"></script>
+    <script type="text/javascript">
+
+    var preauth = ''
+
+    // add a pre-auth authorizer
+    Pusher.Runtime.getAuthorizers = (function (authorizers){
+      authorizers.preauth = function(socketId, channelName, cb){
+        cb(false, {auth: preauth})
+      }
+
+      return function(){
+        return authorizers
+      }
+    })(Pusher.Runtime.getAuthorizers())
+
+
+    var pusher = new Pusher('a27f731976bc54663fc0', {
+      cluster: 'eu',
+      encrypted: true,
+      authTransport: 'preauth'
+    })
+
+    pusher.connection.bind('connected', function(connection) {
+      var socket_id = connection.socket_id
+
+      fetch(
+        'https://cin4u134z3.execute-api.eu-west-1.amazonaws.com/dev/create?socket=' + socket_id,
+        {
+          method: 'POST'
+        })
+        .then(r => r.json())
+        .then(response => {
+          preauth = response.auth
+
+          window.private = pusher.subscribe('private-' + response.id)
+
+        })
+    })
+    </script>
+
+  </body>
+</html>
